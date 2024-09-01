@@ -11,7 +11,7 @@ defmodule TgContact.Telegram do
   plug Tesla.Middleware.JSON
   plug Tesla.Middleware.Headers, [{"Content-Type", "application/json"}]
 
-  @type send_result :: {:ok, %{chat_id: integer(), message_id: integer()}} | {:error, String.t()}
+  @type send_result :: :ok | {:error, String.t()}
 
   @spec send_message(String.t(), String.t(), String.t()) :: send_result()
   def send_message(name, email, message) do
