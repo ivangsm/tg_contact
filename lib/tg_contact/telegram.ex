@@ -1,26 +1,15 @@
 defmodule TgContact.Telegram do
-  @moduledoc """
-  Handles sending messages to Telegram.
-  """
-
   use Tesla
 
   @telegram_base_url "https://api.telegram.org/bot"
 
-  def client do
-    bot_token = config(:bot_token)
-    base_url = "#{@telegram_base_url}#{bot_token}"
+  plug Tesla.Middleware.BaseUrl, "#{@telegram_base_url}#{config(:bot_token)}"
+  plug Tesla.Middleware.JSON
+  plug Tesla.Middleware.Headers, [{"Content-Type", "application/json"}]
 
-    # Log the full URL
-    IO.inspect(base_url, label: "Telegram API Base URL")
+  @type send_result :: :ok | {:error, String.t()}
 
-    Tesla.client([
-      {Tesla.Middleware.BaseUrl, base_url},
-      Tesla.Middleware.JSON,
-      {Tesla.Middleware.Headers, [{"Content-Type", "application/json"}]}
-    ])
-  end
-
+  @spec send_message(String.t(), String.t(), String.t()) :: send_result()
   def send_message(name, email, message) do
     text = """
     New Contact Form Submission:
@@ -34,12 +23,18 @@ defmodule TgContact.Telegram do
       "text" => text
     }
 
+    # Log the body and endpoint for debugging
+    IO.inspect(body, label: "Telegram Request Body")
+    IO.inspect("#{config(:bot_token)}", label: "Telegram API Token")
+
     case post("/sendMessage", body) do
-      {:ok, %{status: 200}} ->
+      {:ok, %{status: 200, body: response_body}} ->
+        IO.inspect(response_body, label: "Telegram API Success Response")
         :ok
 
-      {:ok, %{status: status, body: body}} ->
-        {:error, "Telegram API returned status #{status}: #{inspect(body)}"}
+      {:ok, %{status: status, body: response_body}} ->
+        IO.inspect(response_body, label: "Telegram API Error Response")
+        {:error, "Telegram API returned status #{status}: #{inspect(response_body)}"}
 
       {:error, reason} ->
         {:error, "Request failed: #{inspect(reason)}"}

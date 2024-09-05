@@ -36,7 +36,6 @@ RUN apk add --no-cache openssl ncurses-libs libstdc++ libgcc
 # Set environment variables
 ENV MIX_ENV=prod \
     LANG=C.UTF-8 \
-    REPLACE_OS_VARS=true \
     PORT=4000 \
     HOME=/app
 
