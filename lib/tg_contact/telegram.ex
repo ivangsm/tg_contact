@@ -1,15 +1,27 @@
 defmodule TgContact.Telegram do
+  @moduledoc """
+  Handles sending messages to Telegram.
+  """
+
   use Tesla
+  require Logger
 
   @telegram_base_url "https://api.telegram.org/bot"
 
-  plug Tesla.Middleware.BaseUrl, "#{@telegram_base_url}#{config(:bot_token)}"
-  plug Tesla.Middleware.JSON
-  plug Tesla.Middleware.Headers, [{"Content-Type", "application/json"}]
+  def client do
+    bot_token = config(:bot_token)
+    base_url = "#{@telegram_base_url}#{bot_token}"
 
-  @type send_result :: :ok | {:error, String.t()}
+    # Log the full URL at the debug level
+    Logger.debug("Telegram API Base URL: #{base_url}")
 
-  @spec send_message(String.t(), String.t(), String.t()) :: send_result()
+    Tesla.client([
+      {Tesla.Middleware.BaseUrl, base_url},
+      Tesla.Middleware.JSON,
+      {Tesla.Middleware.Headers, [{"Content-Type", "application/json"}]}
+    ])
+  end
+
   def send_message(name, email, message) do
     text = """
     New Contact Form Submission:
@@ -23,20 +35,17 @@ defmodule TgContact.Telegram do
       "text" => text
     }
 
-    # Log the body and endpoint for debugging
-    IO.inspect(body, label: "Telegram Request Body")
-    IO.inspect("#{config(:bot_token)}", label: "Telegram API Token")
-
-    case post("/sendMessage", body) do
+    case Tesla.post(client(), "/sendMessage", body) do
       {:ok, %{status: 200, body: response_body}} ->
-        IO.inspect(response_body, label: "Telegram API Success Response")
+        Logger.info("Telegram API Success Response: #{inspect(response_body)}")
         :ok
 
       {:ok, %{status: status, body: response_body}} ->
-        IO.inspect(response_body, label: "Telegram API Error Response")
+        Logger.error("Telegram API Error Response: #{inspect(response_body)}")
         {:error, "Telegram API returned status #{status}: #{inspect(response_body)}"}
 
       {:error, reason} ->
+        Logger.error("Request to Telegram API failed: #{inspect(reason)}")
         {:error, "Request failed: #{inspect(reason)}"}
     end
   end

@@ -81,4 +81,8 @@ if config_env() == :prod do
   #       force_ssl: [hsts: true]
   #
   # Check `Plug.SSL` for all available options in `force_ssl`.
+
+  config :tg_contact, TgContact.Telegram,
+    bot_token: System.get_env("TELEGRAM_BOT_TOKEN"),
+    chat_id: System.get_env("TELEGRAM_CHAT_ID")
 end
