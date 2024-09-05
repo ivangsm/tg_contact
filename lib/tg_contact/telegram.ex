@@ -7,13 +7,20 @@ defmodule TgContact.Telegram do
 
   @telegram_base_url "https://api.telegram.org/bot"
 
-  plug Tesla.Middleware.BaseUrl, "#{@telegram_base_url}#{config(:bot_token)}"
-  plug Tesla.Middleware.JSON
-  plug Tesla.Middleware.Headers, [{"Content-Type", "application/json"}]
+  def client do
+    bot_token = config(:bot_token)
+    base_url = "#{@telegram_base_url}#{bot_token}"
 
-  @type send_result :: :ok | {:error, String.t()}
+    # Log the full URL
+    IO.inspect(base_url, label: "Telegram API Base URL")
 
-  @spec send_message(String.t(), String.t(), String.t()) :: send_result()
+    Tesla.client([
+      {Tesla.Middleware.BaseUrl, base_url},
+      Tesla.Middleware.JSON,
+      {Tesla.Middleware.Headers, [{"Content-Type", "application/json"}]}
+    ])
+  end
+
   def send_message(name, email, message) do
     text = """
     New Contact Form Submission:

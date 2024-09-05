@@ -41,7 +41,8 @@ defmodule TgContact.MixProject do
       {:bandit, "~> 1.5"},
       {:tesla, "~> 1.4"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:corsica, "~> 2.1"}
+      {:corsica, "~> 2.1"},
+      {:hammer, "~> 6.1"}
     ]
   end
 

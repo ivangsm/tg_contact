@@ -33,6 +33,10 @@ config :phoenix, :json_library, Jason
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
 
+# This configuration will expire rate-limit records after 2 hours and perform cleanup every 10 minutes.
+config :hammer,
+  backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 2, cleanup_interval_ms: 60_000 * 10]}
+
 config :tg_contact, TgContact.Telegram,
   bot_token: System.get_env("TELEGRAM_BOT_TOKEN"),
   chat_id: System.get_env("TELEGRAM_CHAT_ID")
