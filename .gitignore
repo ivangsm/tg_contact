@@ -26,3 +26,7 @@ erl_crash.dump
 tg_contact-*.tar
 
 .env
+
+.claude
+
+.elixir_ls

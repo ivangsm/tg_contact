@@ -31,7 +31,9 @@ defmodule TgContactWeb.ContactController do
   end
 
   def do_submit(conn, %{"name" => name, "email" => email, "message" => message}) do
-    case Telegram.send_message(name, email, message) do
+    ip_string = conn.remote_ip |> :inet.ntoa() |> to_string()
+
+    case Telegram.send_message(name, email, message, ip_string) do
       :ok ->
         json(conn, %{status: "success"})
 

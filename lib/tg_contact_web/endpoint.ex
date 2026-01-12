@@ -38,6 +38,9 @@ defmodule TgContactWeb.Endpoint do
   plug Plug.RequestId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
 
+  # Security: Block malicious requests early in the pipeline
+  plug TgContactWeb.Plugs.SecurityPlug
+
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
     pass: ["*/*"],

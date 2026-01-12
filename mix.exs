@@ -40,7 +40,7 @@ defmodule TgContact.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:tesla, "~> 1.4"},
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.7.15", only: [:dev, :test], runtime: false},
       {:corsica, "~> 2.1"},
       {:hammer, "~> 6.1"}
     ]

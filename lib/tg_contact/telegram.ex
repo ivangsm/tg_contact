@@ -22,12 +22,14 @@ defmodule TgContact.Telegram do
     ])
   end
 
-  def send_message(name, email, message) do
+  def send_message(name, email, message, ip \\ nil) do
+    ip_line = if ip, do: "IP: #{ip}\n", else: ""
+
     text = """
     New Contact Form Submission:
     Name: #{name}
     Email: #{email}
-    Message: #{message}
+    #{ip_line}Message: #{message}
     """
 
     body = %{
